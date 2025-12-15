@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="bg">
+<head>
+  <meta charset="UTF-8">
+  <title>Register</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+  <div class="container login-container">
+    <h2>Регистрация</h2>
+    <form method="POST">
+      <input type="text" name="username" placeholder="Потребителско име" required>
+      <input type="password" name="password" placeholder="Парола" required>
+      <button type="submit">Регистрация</button>
+    </form>
+    <a href="{{ url_for('login') }}">Вход</a>
+  </div>
+</body>
+</html>

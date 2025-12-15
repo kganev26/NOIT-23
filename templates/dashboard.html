@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="bg">
+<head>
+  <meta charset="UTF-8">
+  <title>Dashboard</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+  <div class="container">
+
+    <div class="sidebar">
+      <h2>Меню</h2>
+      <button class="tab-button active" onclick="openTab('dashboardTab')">Dashboard</button>
+      <button class="tab-button" onclick="openTab('otherTab')">Други</button>
+    </div>
+
+    <div class="content-area">
+      <!-- Dashboard Tab -->
+      <div id="dashboardTab" class="tab-content" style="display:block;">
+        <div class="cards">
+
+          <!-- XP Card -->
+          <div class="card">
+            <h3>XP :</h3>
+            <p>{{ user.xp }}</p>
+          </div>
+
+          <!-- Level Card -->
+          <div class="card">
+            <h3>Ниво :</h3>
+            <p>{{ user.level }}</p>
+          </div>
+
+          <!-- Missions Card -->
+          <div class="card">
+            <h3>Мисии :</h3>
+            {% if not missions %}
+              <button onclick="generateMissions()">Генерирай мисии</button>
+            {% endif %}
+
+            {% if missions %}
+              <ul>
+                {% for mission in missions %}
+                  <li>
+                    <span>{{ mission.title }}</span>
+                    <button onclick="completeMission({{ mission.id }}, {{ mission.xp_reward }})">Завърши</button>
+                  </li>
+                {% endfor %}
+              </ul>
+            {% else %}
+              <p>Няма налични мисии!</p>
+            {% endif %}
+          </div>
+
+        </div>
+      </div>
+
+      <!-- Other Tab (example) -->
+      <div id="otherTab" class="tab-content" style="display:none;">
+        <p>Тук ще са другите табове.</p>
+      </div>
+    </div>
+
+  </div>
+
+  <script>
+
+    function completeMission(id, xp) {
+      fetch(`/complete-mission/${id}`, { method: 'POST' })
+        .then(() => location.reload());
+    }
+
+    function generateMissions() {
+      fetch('/generate-missions')
+        .then(() => location.reload());
+    }
+
+    function openTab(tabId) {
+      const contents = document.querySelectorAll('.tab-content');
+      const buttons = document.querySelectorAll('.tab-button');
+
+      contents.forEach(c => c.style.display = 'none');
+      buttons.forEach(b => b.classList.remove('active'));
+
+      document.getElementById(tabId).style.display = 'block';
+      event.currentTarget.classList.add('active');
+    }
+  </script>
+
+</body>
+</html>

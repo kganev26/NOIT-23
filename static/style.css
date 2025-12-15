@@ -1,0 +1,168 @@
+/* ==================== Base Styles ==================== */
+body {
+font-family: Arial, sans-serif;
+background: linear-gradient(135deg, #1e1e2f, #2b2b4f);
+color: #ffffff;
+margin: 0;
+min-height: 100vh;
+}
+
+a {
+display: block;
+text-align: center;
+margin-top: 15px;
+color: #bdbbff;
+text-decoration: none;
+}
+
+/* ==================== Container Layout ==================== */
+.container {
+display: flex;
+min-height: 100vh;
+}
+
+/* ==================== Sidebar ==================== */
+.sidebar {
+width: 200px;
+background: rgba(0,0,0,0.3);
+padding: 20px;
+display: flex;
+flex-direction: column;
+gap: 10px;
+}
+
+.sidebar h2 {
+text-align: center;
+margin-bottom: 20px;
+}
+
+.tab-button {
+background: rgba(255,255,255,0.15);
+border: none;
+padding: 12px;
+border-radius: 12px;
+cursor: pointer;
+color: #fff;
+font-weight: bold;
+transition: background 0.2s;
+}
+
+.tab-button.active {
+background: #6c63ff;
+}
+
+.tab-button:hover {
+background: rgba(255,255,255,0.25);
+}
+
+/* ==================== Content Area ==================== */
+.content-area {
+flex: 1;
+padding: 20px;
+}
+
+/* ==================== Cards ==================== */
+.cards {
+display: grid;
+grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+gap: 20px;
+}
+
+.card {
+background: rgba(255,255,255,0.1);
+padding: 20px;
+border-radius: 16px;
+box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+}
+
+.card h3 {
+margin-top: 0;
+}
+
+/* ==================== Buttons ==================== */
+button {
+border-radius: 10px;
+border: none;
+background: #6c63ff;
+color: white;
+cursor: pointer;
+transition: transform 0.1s ease, background 0.2s;
+}
+
+button:hover {
+background: #857dff;
+transform: scale(1.03);
+}
+
+/* ==================== Missions ==================== */
+.missions ul {
+list-style: none;
+padding: 0;
+}
+
+.missions li {
+display: flex;
+justify-content: space-between;
+align-items: center;
+margin: 10px 0;
+padding: 8px 12px;
+background: rgba(255,255,255,0.15);
+border-radius: 12px;
+transition: background 0.2s;
+}
+
+.missions li:hover {
+background: rgba(255,255,255,0.25);
+}
+
+.missions button {
+padding: 6px 12px;
+font-size: 14px;
+}
+
+/* ==================== Stats ==================== */
+.stats {
+text-align: center;
+margin-bottom: 20px;
+}
+
+.xp {
+font-size: 20px;
+font-weight: bold;
+}
+
+.level {
+opacity: 0.8;
+margin-top: 5px;
+}
+/* ==================== Login/Register Specific ==================== */
+.login-container {
+  background: rgba(255, 255, 255, 0.1);
+  padding: 30px;
+  border-radius: 16px;
+  width: 360px;
+  max-width: 90%;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  margin: 1em auto;
+  min-height: 50vh;
+}
+
+.login-container input {
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 12px;
+  border-radius: 8px;
+  border: none;
+  outline: none;
+  font-size: 14px;
+}
+
+.login-container button {
+  width: 100%;
+  padding: 12px;
+  margin-top: 6px;
+}
