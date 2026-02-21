@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="bg">
+<head>
+  <meta charset="UTF-8">
+  <title>{{ mission.title }}</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+<div class="mission-container">
+  <h1>{{ mission.title }}</h1>
+  <p id="timer">Loading...</p>
+
+  {% if "math" in mission.title.lower() %}
+  <div class="equation-box" id="equation-area">
+    <h2>Решете уравнението:</h2>
+    <p id="equation"></p>
+    <input type="number" id="answer" placeholder="Вашият отговор">
+    <button type="button" onclick="checkAnswer()">Submit</button>
+    <p id="result"></p>
+  </div>
+  {% endif %}
+
+  <form id="completeForm" action="{{ url_for('complete_mission', mission_id=mission.id) }}" method="POST" style="display:none;">
+    <button type="submit" class="complete-btn">End Mission</button>
+  </form>
+
+  <a href="{{ url_for('dashboard') }}" class="back-btn">Go Back</a>
+</div>
+
+<script>
+let totalSeconds = {{ mission.remaining_seconds or mission.duration * 60 }};
+let displayInterval;
+let saveInterval;
+startTimer();
+// ------------------------
+// Timer functions
+// ------------------------
+function startTimer() {
+    if (!displayInterval) {
+        displayInterval = setInterval(updateDisplay, 1000); // update timer every second
+    }
+    if (!saveInterval) {
+        saveInterval = setInterval(saveTime, 5000); // save to backend every 5 seconds
+    }
+}
+
+function pauseTimer() {
+    clearInterval(displayInterval);
+    clearInterval(saveInterval);
+    displayInterval = null;
+    saveInterval = null;
+}
+
+// ------------------------
+// Update the visible timer
+// ------------------------
+function updateDisplay() {
+    if (totalSeconds <= 0) {
+        pauseTimer();
+        document.getElementById("completeForm").style.display = "block";
+        document.getElementById("timer").innerText = "Time's up!";
+        return;
+    }
+    let minutes = Math.floor(totalSeconds / 60);
+    let seconds = totalSeconds % 60;
+    document.getElementById("timer").innerText = `${minutes}:${seconds < 10 ? "0" : ""}${seconds}`;
+    totalSeconds--;
+}
+
+// ------------------------
+// Save timer to backend
+// ------------------------
+function saveTime() {
+    if (totalSeconds > 0) {
+        fetch("/pause_mission/{{ mission.id }}", {
+            method: "POST",
+            headers: {"Content-Type": "application/json"},
+            body: JSON.stringify({remaining_seconds: totalSeconds})
+        });
+    }
+}
+
+// ------------------------
+// Pause/resume on tab focus
+// ------------------------
+window.addEventListener("focus", startTimer);
+window.addEventListener("blur", pauseTimer);
+
+// ------------------------
+// Save timer when closing page
+// ------------------------
+window.addEventListener("beforeunload", function() {
+    navigator.sendBeacon(
+        "/pause_mission/{{ mission.id }}",
+        JSON.stringify({ remaining_seconds: totalSeconds })
+    );
+});
+// ------------------------
+// Initialize display immediately
+// ------------------------
+updateDisplay();
+
+// ------------------------
+// Math mission logic
+// ------------------------
+{% if "math" in mission.title.lower() %}
+let correctAnswer;
+function generateEquation() {
+    let num1 = Math.floor(Math.random() * 20) + 1;
+    let num2 = Math.floor(Math.random() * 20) + 1;
+    correctAnswer = num1 + num2;
+    document.getElementById("equation").innerText = `${num1} + ${num2} = ?`;
+    document.getElementById("answer").value = "";
+    document.getElementById("result").innerText = "";
+}
+function checkAnswer() {
+    let userAnswer = parseInt(document.getElementById("answer").value);
+    if(userAnswer === correctAnswer){
+        fetch("/add_bonus_xp", {
+            method:"POST",
+            headers:{"Content-Type":"application/json"},
+            body:JSON.stringify({xp:2})
+        });
+        document.getElementById("result").innerText = "+2 XP!";
+        generateEquation();
+    } else {
+        document.getElementById("result").innerText = "Try again!";
+    }
+}
+generateEquation();
+{% endif %}
+</script>
+</body>
+</html>

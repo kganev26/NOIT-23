@@ -1,188 +1,402 @@
-/* ==================== Base ==================== */
+/* ==================== Reset ==================== */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+/* ==================== Body ==================== */
 body {
-  font-family: Arial, sans-serif;
-  background: linear-gradient(135deg, #1e1e2f, #2b2b4f);
-  color: #ffffff;
-  margin: 0;
-  min-height: 100vh;
+    background: linear-gradient(135deg, #1f2937, #111827);
+    color: #fff;
+    min-height: 100vh;
+}
+/* ==================== Login & Register Containers ==================== */
+
+.login-container, .register-container {
+    width: 22rem;
+    max-width: 90%;
+    margin: 10vh auto; /* Centers it vertically on the screen */
+    background: rgba(255, 255, 255, 0.1);
+    padding: 2.5rem;
+    border-radius: 1rem;
+    box-shadow: 0 0.5rem 1.5rem rgba(0, 0, 0, 0.4);
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    backdrop-filter: blur(10px); /* Adds a nice frosted glass effect */
+    border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
-a {
-  display: block;
-  text-align: center;
-  margin-top: 1rem;
-  color: #bdbbff;
-  text-decoration: none;
+.login-container h2, .register-container h2 {
+    font-size: 1.8rem;
+    color: #fff;
+    margin-bottom: 0.5rem;
 }
 
-/* ==================== Layout ==================== */
-.container {
-  display: flex;
-  min-height: 100vh;
+/* Form Styling */
+.login-container form, .register-container form {
+    display: flex;
+    flex-direction: column;
+    gap: 1.2rem;
 }
 
+/* Input Fields (Matching your table/equation style) */
+.login-container input, .register-container input {
+    width: 100%;
+    padding: 0.8rem;
+    border-radius: 0.75rem;
+    border: none;
+    outline: none;
+    background: rgba(255, 255, 255, 0.15);
+    color: white;
+    font-size: 1rem;
+    text-align: center;
+    transition: background 0.3s ease;
+}
+
+.login-container input:focus, .register-container input:focus {
+    background: rgba(255, 255, 255, 0.25);
+}
+
+/* Button Styling */
+.login-container button, .register-container button {
+    padding: 0.8rem;
+    border-radius: 0.75rem;
+    border: none;
+    background: #6c63ff; /* Matching your Sidebar active color */
+    color: white;
+    font-weight: bold;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: transform 0.2s, background 0.3s;
+}
+
+.login-container button:hover, .register-container button:hover {
+    background: #5a52d5;
+    transform: translateY(-2px);
+}
+
+/* Link Styling */
+.login-container a, .register-container a {
+    font-size: 0.9rem;
+    color: #3b82f6;
+    text-decoration: none;
+    transition: color 0.2s;
+}
+
+.login-container a:hover, .register-container a:hover {
+    color: #60a5fa;
+    text-decoration: underline;
+}
 /* ==================== Sidebar ==================== */
-.sidebar {
-  width: 18%;
-  min-width: 12rem;
-  background: rgba(0,0,0,0.3);
-  padding: 1.25rem;
-  display: flex;
-  flex-direction: column;
-  gap: 0.75rem;
+.container {
+    display: flex;
+    min-height: 100vh;
 }
 
-.sidebar h2 {
-  text-align: center;
-  margin-bottom: 1.25rem;
+.sidebar {
+    width: 15rem;
+    background: rgba(0,0,0,0.3);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 2rem 1rem;
+    gap: 1.5rem;
+}
+
+.sidebar .logo img {
+    width: 15rem;
+    height: 7rem;
+    margin-bottom: 1rem;
+    filter: brightness(120%);
 }
 
 .tab-button {
-  background: rgba(255,255,255,0.15);
-  border: none;
-  padding: 0.75em;
-  border-radius: 0.75rem;
-  cursor: pointer;
-  color: #fff;
-  font-weight: bold;
-  transition: background 0.2s;
+    width: 100%;
+    padding: 0.8rem;
+    background: rgba(255,255,255,0.15);
+    border: none;
+    border-radius: 0.75rem;
+    color: #fff;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background 0.2s;
 }
 
 .tab-button.active {
-  background: #6c63ff;
+    background: #6c63ff;
 }
 
 .tab-button:hover {
-  background: rgba(255,255,255,0.25);
+    background: rgba(255,255,255,0.25);
 }
 
-/* ==================== Content ==================== */
+/* ==================== Content Area ==================== */
 .content-area {
-  flex: 1;
-  padding: 1.5rem;
+    flex: 1;
+    padding: 2rem;
+    display: flex;
+    flex-direction: column;
 }
 
 /* ==================== Cards ==================== */
 .cards {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr));
-  gap: 1.25rem;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr));
+    gap: 1.5rem;
 }
 
 .card {
-  background: rgba(255,255,255,0.1);
-  padding: 1.25rem;
-  border-radius: 1rem;
-  box-shadow: 0 0.3rem 1rem rgba(0,0,0,0.2);
+    background: rgba(255,255,255,0.1);
+    padding: 1.5rem;
+    border-radius: 1rem;
+    box-shadow: 0 0.5rem 1.5rem rgba(0,0,0,0.3);
+    text-align: center;
+    
 }
 
-/* ==================== Buttons ==================== */
-button {
-  border-radius: 0.6rem;
-  border: none;
-  background: #6c63ff;
-  color: white;
-  cursor: pointer;
-  transition: transform 0.1s ease, background 0.2s;
+.card h3 {
+    margin-bottom: 0.5rem;
+}
+/* Missions links */
+.card:nth-child(3) .missions a {
+    color: #e3e1e1; /* Example: yellow */
+    text-decoration: none; /* Remove underline by default */
+    transition: text-decoration 0.2s ease, color 0.2s ease;
 }
 
-button:hover {
-  background: #857dff;
-  transform: scale(1.03);
+.card:nth-child(3) .missions a:hover {
+    text-decoration: underline; /* Underline only on hover */
+    color: #fff4c9; /* Optional: slightly brighter color on hover */
+}
+/* ========================= */
+/* MISSION PAGE STYLING */
+/* ========================= */
+
+.mission-container {
+    width: 22rem;
+    max-width: 90%;
+    margin: 2rem auto;
+    background: rgba(255,255,255,0.1);
+    padding: 2rem;
+    border-radius: 1rem;
+    box-shadow: 0 0.5rem 1.5rem rgba(0,0,0,0.3);
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
 }
 
-/* ==================== Missions ==================== */
-.missions ul {
-  list-style: none;
-  padding: 0;
+.mission-container h1,
+.mission-container h2 {
+    margin-bottom: 0.5rem;
 }
 
-.missions li {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin: 0.6rem 0;
-  padding: 0.6rem 0.75rem;
-  background: rgba(255,255,255,0.15);
-  border-radius: 0.75rem;
+.mission-container p {
+    font-size: 1rem;
+    margin-bottom: 1rem;
 }
 
-.missions button {
-  padding: 0.4em 0.8em;
-  font-size: 0.9rem;
+/* ========================= */
+/* Equation Box (inside mission) */
+/* ========================= */
+.equation-box {
+    background: rgba(255,255,255,0.05);
+    padding: 1.5rem;
+    border-radius: 1rem;
+    box-shadow: 0 0.5rem 1rem rgba(0,0,0,0.3);
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
 }
 
-/* ==================== Stats ==================== */
-.stats {
-  text-align: center;
-  margin-bottom: 1rem;
+.equation-box h2 {
+    margin-bottom: 0.5rem;
 }
 
-.xp {
-  font-size: 1.25rem;
-  font-weight: bold;
+#equation {
+    font-size: 1.5rem;
+    font-weight: bold;
 }
 
-.level {
-  opacity: 0.8;
-  margin-top: 0.25rem;
+#answer {
+    width: 80%;
+    padding: 0.75rem;
+    border-radius: 0.75rem;
+    border: none;
+    font-size: 1rem;
+    text-align: center;
 }
 
-/* ==================== Login/Register ==================== */
-.login-container {
-  background: rgba(255, 255, 255, 0.1);
-  padding: 2rem;
-  border-radius: 1rem;
-  width: 22rem;
-  max-width: 90%;
-  box-shadow: 0 0.6rem 2rem rgba(0,0,0,0.3);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
+.equation-box button {
+    padding: 0.75rem 1.5rem;
+    border-radius: 0.75rem;
+    border: none;
+    background: #3b82f6;
+    color: white;
+    cursor: pointer;
+    font-weight: bold;
+    transition: 0.3s;
 }
 
-.login-container input {
-  width: 100%;
-  padding: 0.6em;
-  margin-bottom: 0.75rem;
-  border-radius: 0.5rem;
-  border: none;
-  font-size: 0.9rem;
+.equation-box button:hover {
+    background: #2563eb;
 }
 
-.login-container button {
-  width: 100%;
-  padding: 0.75em;
+/* ========================= */
+/* Complete and Back Buttons */
+/* ========================= */
+.complete-btn {
+    padding: 0.8rem 1.5rem;
+    background: #22c55e;
+    border: none;
+    border-radius: 0.75rem;
+    color: white;
+    font-weight: bold;
+    cursor: pointer;
+    transition: 0.3s;
 }
 
-/* ==================== Logo ==================== */
-.logo {
-  display: flex;
-  justify-content: center;
+.complete-btn:hover {
+    background: #16a34a;
 }
 
-.logo img {
-  width: 15rem;
-  height: 4.9rem;
-}
-.timer-controls {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-}
-
-.timer-controls span {
-  font-weight: bold;
-  min-width: 4.5rem;
-  text-align: center;
+.back-btn {
+    display: inline-block;
+    padding: 0.8rem 1.5rem;
+    background: #64748b;
+    border-radius: 0.75rem;
+    text-decoration: none;
+    color: white;
+    font-weight: bold;
+    transition: 0.3s;
 }
 
-button:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
+.back-btn:hover {
+    background: #475569;
 }
 
-button.ready {
-  background: #4caf50;
+/* ========================= */
+/* Mission Finished Screen */
+/* ========================= */
+.mission-finished {
+    background: rgba(255,255,255,0.05);
+    padding: 2rem;
+    border-radius: 1rem;
+    box-shadow: 0 0.5rem 1.5rem rgba(34,197,94,0.3);
+    text-align: center;
 }
 
+.mission-finished h2 {
+    color: #22c55e;
+    margin-bottom: 1rem;
+}
+
+#xp-earned {
+    font-weight: bold;
+}
+#timer {
+    font-size: 3rem; /* bigger font size */
+    font-weight: bold;
+    margin: 1rem 0;
+}
+
+/* ==================== Links ==================== */
+a {
+    color: #3b82f6;
+}
+
+a:hover {
+    text-decoration: underline;
+}
+/* ==================== Weekly Study Program ==================== */
+
+.content-area table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 1.5rem 0;
+    background: rgba(255,255,255,0.05);
+    border-radius: 1rem;
+    overflow: hidden;
+}
+
+.content-area th,
+.content-area td {
+    border: 1px solid rgba(255,255,255,0.15);
+    padding: 0.6rem;
+    text-align: center;
+}
+
+.content-area th {
+    background: rgba(255,255,255,0.12);
+    font-weight: bold;
+}
+
+.content-area td {
+    background: rgba(255,255,255,0.04);
+}
+
+/* Input Styling */
+.content-area input[type="text"] {
+    width: 95%;
+    padding: 0.4rem;
+    border-radius: 0.5rem;
+    border: none;
+    outline: none;
+    text-align: center;
+    background: rgba(255,255,255,0.15);
+    color: white;
+    transition: 0.2s;
+}
+
+.content-area input[type="text"]:focus {
+    background: rgba(255,255,255,0.25);
+}
+/* ==================== Weekly Study Program ==================== */
+
+.content-area table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 1.5rem 0;
+    background: rgba(255,255,255,0.05);
+    border-radius: 1rem;
+    overflow: hidden;
+}
+
+.content-area th,
+.content-area td {
+    border: 1px solid rgba(255,255,255,0.15);
+    padding: 0.6rem;
+    text-align: center;
+}
+
+.content-area th {
+    background: rgba(255,255,255,0.12);
+    font-weight: bold;
+}
+
+.content-area td {
+    background: rgba(255,255,255,0.04);
+}
+
+/* Input Styling */
+.content-area input[type="text"] {
+    width: 95%;
+    padding: 0.4rem;
+    border-radius: 0.5rem;
+    border: none;
+    outline: none;
+    text-align: center;
+    background: rgba(255,255,255,0.15);
+    color: white;
+    transition: 0.2s;
+}
+
+.content-area input[type="text"]:focus {
+    background: rgba(255,255,255,0.25);
+}
