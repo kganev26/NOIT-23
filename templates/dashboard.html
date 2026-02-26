@@ -1,9 +1,49 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="bg">
 <head>
     <meta charset="UTF-8">
-    <title>Dashboard</title>
+    <title>Табло - Dashboard</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <style>
+        /* Допълнителни стилове за по-големи баджове и разположение */
+        .badge-display img {
+            transition: transform 0.3s ease;
+        }
+        .badge-display img:hover {
+            transform: scale(1.1);
+        }
+        .card {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            padding: 20px;
+        }
+        .study-program-section table {
+            width: 100%;
+            border-collapse: collapse;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+            overflow: hidden;
+        }
+        .study-program-section th, .study-program-section td {
+            padding: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            text-align: center;
+        }
+        .study-program-section input {
+            width: 90%;
+            background: transparent;
+            border: none;
+            color: white;
+            text-align: center;
+            font-size: 0.9rem;
+        }
+        .study-program-section input:focus {
+            outline: 1px solid #6c63ff;
+            background: rgba(108, 99, 255, 0.1);
+        }
+    </style>
 </head>
 <body>
 
@@ -12,126 +52,116 @@
         <div class="logo">
             <img src="{{ url_for('static', filename='logo.png') }}" alt="Logo">
         </div>
-        <button class="tab-button active" onclick="openTab('dashboardTab')">Dashboard</button>
-        <button class="tab-button" onclick="openTab('otherTab')">Settings</button>
+        <a href="{{ url_for('dashboard') }}" class="tab-button active">Dashboard</a>
+        <a href="{{ url_for('ai_assistant') }}" class="tab-button">AI Assistant</a>
+        
         <a href="{{ url_for('logout') }}" class="back-btn" style="margin-top: auto; width: 100%; text-align: center; text-decoration: none;">Logout</a>
     </div>
 
     <div class="content-area">
-        
-        <div id="dashboardTab" class="tab-content">
-            <h1 style="margin-bottom: 1.5rem;">Welcome, {{ user.username }}</h1>
+        <h1 style="margin-bottom: 1.5rem;">Добре дошъл, {{ current_user.username }}</h1>
 
-            <div class="cards">
-                <div class="card">
-                    <h3>Total XP</h3>
-                    <p style="font-size: 2.5rem; font-weight: bold; color: #6c63ff;">{{ user.xp }}</p>
+        <div class="cards">
+            <div class="card">
+                <h3>Total XP</h3>
+                <p style="font-size: 2.5rem; font-weight: bold; color: #6c63ff; margin-bottom: 0.5rem;">{{ current_user.xp }}</p>
+                
+                <div class="xp-progress-wrapper" style="background: rgba(255,255,255,0.1); border-radius: 10px; height: 12px; width: 100%; overflow: hidden; margin-top: 10px;">
+                    <div class="xp-bar-fill" style="width: {{ (current_user.xp % 100) }}%; background: linear-gradient(90deg, #6c63ff, #a29bfe); height: 100%; transition: width 0.8s ease-out;"></div>
                 </div>
+                <small style="opacity: 0.7; display: block; margin-top: 8px;">{{ current_user.xp % 100 }} / 100 XP до следващо ниво</small>
+            </div>
 
-                <div class="card">
-                    <h3>Level</h3>
-                    <p style="font-size: 2.5rem; font-weight: bold; color: #22c55e;">{{ user.level }}</p>
-                </div>
-
-                <div class="card">
-                    <h3>Missions</h3>
-                    <div class="missions">
-                        
-                        <form action="{{ url_for('generate_missions') }}" method="POST" style="margin-bottom: 1rem;">
-                            <label style="font-size: 0.8rem; display: block; margin-bottom: 5px;">Study for which day?</label>
-                            <select name="selected_day" class="tab-button" style="background: rgba(255,255,255,0.1); margin-bottom: 0.5rem; text-align: center; height: auto; padding: 5px;">
-                                <option value="Monday">Monday</option>
-                                <option value="Tuesday">Tuesday</option>
-                                <option value="Wednesday">Wednesday</option>
-                                <option value="Thursday">Thursday</option>
-                                <option value="Friday">Friday</option>
-                            </select>
-                            <button type="submit" class="tab-button" style="font-size: 0.8rem; background: #6c63ff; border: none;">
-                                Generate Missions
-                            </button>
-                        </form>
-
-                        <ul style="list-style: none; text-align: left; font-size: 0.9rem; padding: 0;">
-                            {% for mission in missions %}
-                                <li style="margin-bottom: 0.8rem; display: flex; justify-content: space-between; align-items: center; background: rgba(255,255,255,0.05); padding: 0.6rem; border-radius: 0.5rem;">
-                                    <span>{{ mission.title }}</span>
-                                    <a href="{{ url_for('mission', mission_id=mission.id) }}" style="color: #6c63ff; font-weight: bold; text-decoration: none;">Start</a>
-                                </li>
-                            {% else %}
-                                <li style="opacity: 0.6; text-align: center;">Select a day to generate tasks.</li>
-                            {% endfor %}
-                        </ul>
-                    </div>
+            <div class="card">
+                <h3>Rank & Status</h3>
+                <p style="font-size: 1.5rem; font-weight: bold; color: #22c55e; margin-bottom: 10px;">Level {{ current_user.level }}</p>
+                
+                <div class="badge-display">
+                    {% if current_user.level >= 10 %}
+                        <img src="{{ url_for('static', filename='badges/nivo10.png') }}" alt="Legendary Badge" style="width: 110px; filter: drop-shadow(0 0 15px rgba(0, 210, 255, 0.6));">
+                    {% elif current_user.level >= 5 %}
+                        <img src="{{ url_for('static', filename='badges/nivo5.png') }}" alt="Elite Badge" style="width: 110px; filter: drop-shadow(0 0 10px rgba(255, 157, 0, 0.5));">
+                    {% else %}
+                        <img src="{{ url_for('static', filename='badges/nivo1.png') }}" alt="Novice Badge" style="width: 110px;">
+                    {% endif %}
                 </div>
             </div>
 
-            <hr style="margin: 2rem 0; border: 0; border-top: 1px solid rgba(255,255,255,0.1);">
+            <div class="card">
+                <h3>Daily Missions</h3>
+                <div class="missions" style="width: 100%;">
+                    <form action="{{ url_for('generate_missions') }}" method="POST" style="margin-bottom: 1rem;">
+                        <select name="selected_day" class="tab-button" style="background: rgba(255, 255, 255, 0.1); margin-bottom: 0.5rem; width: 100%; color: white;">
+                            <option value="Monday">Понеделник</option>
+                            <option value="Tuesday">Вторник</option>
+                            <option value="Wednesday">Сряда</option>
+                            <option value="Thursday">Четвъртък</option>
+                            <option value="Friday">Петък</option>
+                        </select>
+                        <button type="submit" class="tab-button" style="font-size: 0.85rem; background: #6c63ff; border: none; cursor: pointer; width: 100%;">
+                            Get 3 Random Missions
+                        </button>
+                    </form>
 
-            <div class="study-program-section">
-                <h2 style="margin-bottom: 1rem;">Weekly Study Program</h2>
-                <form action="{{ url_for('study_program') }}" method="POST">
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>Hour</th>
-                                <th>Monday</th>
-                                <th>Tuesday</th>
-                                <th>Wednesday</th>
-                                <th>Thursday</th>
-                                <th>Friday</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {% set days = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"] %}
-                            {% for hour in range(1, 9) %}
-                            <tr>
-                                <td><strong>{{ hour }}</strong></td>
-                                {% for day in days %}
+                    <ul style="list-style: none; text-align: left; font-size: 0.9rem; padding: 0;">
+                        {% for mission in missions %}
+                            <li style="margin-bottom: 0.8rem; display: flex; justify-content: space-between; align-items: center; background: rgba(255,255,255,0.05); padding: 0.8rem; border-radius: 0.5rem; border-left: 3px solid #6c63ff;">
+                                <span>{{ mission.title }}</span>
+                                <a href="{{ url_for('mission', mission_id=mission.id) }}" style="color: #6c63ff; font-weight: bold; text-decoration: none;">Start →</a>
+                            </li>
+                        {% else %}
+                            <li style="opacity: 0.5; text-align: center; padding: 10px;">Избери ден, за да заредиш мисии.</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <hr style="margin: 2.5rem 0; border: 0; border-top: 1px solid rgba(255,255,255,0.1);">
+
+        <div class="study-program-section">
+            <h2 style="margin-bottom: 1.5rem; display: flex; align-items: center; gap: 10px;">
+                📅 Седмична Програма
+            </h2>
+            <form action="{{ url_for('study_program') }}" method="POST">
+                <table>
+                    <thead>
+                        <tr>
+                            <th style="color: #6c63ff;">Час</th>
+                            <th>Понеделник</th>
+                            <th>Вторник</th>
+                            <th>Сряда</th>
+                            <th>Четвъртък</th>
+                            <th>Петък</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% set days = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"] %}
+                        {% for hour in range(1, 9) %}
+                        <tr>
+                            <td><strong>{{ hour }}</strong></td>
+                            {% for day in days %}
                                 <td>
-                                    {# Logic matches app.py formatting: Day_Hour #}
                                     {% set cell_key = day ~ '_' ~ hour %}
                                     <input type="text" 
-                                           name="{{ cell_key }}" 
-                                           value="{{ programs.get(cell_key, '') }}"
-                                           placeholder="...">
+                                        name="{{ cell_key }}" 
+                                        value="{{ programs.get(cell_key, '') }}" 
+                                        placeholder="...">
                                 </td>
-                                {% endfor %}
-                            </tr>
                             {% endfor %}
-                        </tbody>
-                    </table>
-                    <button type="submit" class="complete-btn" style="width: 200px; margin-top: 1rem;">Save Program</button>
-                </form>
-            </div>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+                <div style="text-align: right;">
+                    <button type="submit" class="complete-btn" style="width: 220px; margin-top: 1.5rem; background: #22c55e;">
+                        💾 Запази Програмата
+                    </button>
+                </div>
+            </form>
         </div>
-
-        <div id="otherTab" class="tab-content" style="display: none;">
-            <h2>Settings</h2>
-            <p style="margin-top: 1rem; opacity: 0.8;">Account settings and customization options will appear here.</p>
-        </div>
-
     </div>
 </div>
-
-<script>
-/**
- * Tab switching logic
- */
-function openTab(tabId) {
-    const contents = document.querySelectorAll('.tab-content');
-    const buttons = document.querySelectorAll('.tab-button');
-
-    // Hide all contents
-    contents.forEach(c => c.style.display = 'none');
-    
-    // Deactivate all buttons
-    buttons.forEach(b => b.classList.remove('active'));
-
-    // Show selected and activate button
-    document.getElementById(tabId).style.display = 'block';
-    event.currentTarget.classList.add('active');
-}
-</script>
 
 </body>
 </html>

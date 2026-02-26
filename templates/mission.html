@@ -1,77 +1,94 @@
 <!DOCTYPE html>
 <html lang="bg">
 <head>
-  <meta charset="UTF-8">
-  <title>{{ mission.title }}</title>
-  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <meta charset="UTF-8">
+    <title>{{ mission.title }}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <style>
+        @keyframes badgeShake {
+            0% { transform: scale(1.2) rotate(0deg); }
+            25% { transform: scale(1.3) rotate(10deg); }
+            50% { transform: scale(1.3) rotate(-10deg); }
+            75% { transform: scale(1.3) rotate(10deg); }
+            100% { transform: scale(1.2) rotate(0deg); }
+        }
+        .shake-active { animation: badgeShake 0.5s ease-in-out; }
+        #badge-wrapper img { transition: transform 0.3s ease; transform: scale(1.2); }
+    </style>
 </head>
-<body>
+<body class="mission-page">
+
 <div class="mission-container">
-  <h1>{{ mission.title }}</h1>
-  <p id="timer">Loading...</p>
+    <header class="mission-header" style="display: flex; justify-content: space-between; align-items: center; padding: 20px;">
+        <a href="{{ url_for('dashboard') }}" class="back-btn">← Назад</a>
+        
+        <div class="user-mission-rank" style="display: flex; align-items: center; gap: 15px;">
+            <div id="badge-wrapper">
+                {% if current_user.level >= 10 %}
+                    <img src="{{ url_for('static', filename='badges/nivo10.png') }}" alt="Legendary" style="width: 80px;">
+                {% elif current_user.level >= 5 %}
+                    <img src="{{ url_for('static', filename='badges/nivo5.png') }}" alt="Elite" style="width: 80px;">
+                {% else %}
+                    <img src="{{ url_for('static', filename='badges/nivo1.png') }}" alt="Novice" style="width: 80px;">
+                {% endif %}
+            </div>
+        </div>
+    </header>
 
-  {% if "math" in mission.title.lower() %}
-  <div class="equation-box" id="equation-area">
-    <h2>Решете уравнението:</h2>
-    <p id="equation"></p>
-    <input type="number" id="answer" placeholder="Вашият отговор">
-    <button type="button" onclick="checkAnswer()">Submit</button>
-    <p id="result"></p>
-  </div>
-  {% endif %}
+    <div class="timer-section" style="text-align: center; margin-bottom: 20px;">
+        <h1>{{ mission.title }}</h1>
+        <div style="font-size: 3.5rem; color: #ffd700; font-family: monospace;"><span id="timer">--:--</span></div>
+    </div>
 
-  <form id="completeForm" action="{{ url_for('complete_mission', mission_id=mission.id) }}" method="POST" style="display:none;">
-    <button type="submit" class="complete-btn">End Mission</button>
-  </form>
+    <div class="mechanic-box" style="background: rgba(255,255,255,0.05); padding: 2rem; border-radius: 20px; text-align: center; border: 1px solid #6c63ff;">
+        <h2 id="task-title" style="color: #a29bfe; margin-bottom: 10px;">Зареждане...</h2>
+        <div id="display-area" style="font-size: 3.5rem; margin: 25px 0; font-weight: bold; color: #fff;"></div>
+        
+        <div id="input-container">
+            <input type="text" id="user-answer" class="mechanic-input" placeholder="Отговор..." autocomplete="off" style="font-size: 1.5rem; padding: 10px;">
+            <br><br>
+            <button type="button" class="complete-btn" onclick="checkAnswer()" style="width: auto; padding: 12px 50px; font-size: 1.1rem;">Провери</button>
+        </div>
+        <p id="result-msg" style="margin-top: 20px; font-size: 1.2rem; font-weight: bold; min-height: 24px;"></p>
+    </div>
 
-  <a href="{{ url_for('dashboard') }}" class="back-btn">Go Back</a>
+    <form id="completeForm" action="{{ url_for('complete_mission', mission_id=mission.id) }}" method="POST" style="display:none; text-align: center; margin-top: 30px;">
+        <button type="submit" class="complete-btn" style="background: #22c55e; padding: 20px 60px; font-size: 1.3rem;">ЗАВЪРШИ МИСИЯТА</button>
+    </form>
 </div>
 
 <script>
 let totalSeconds = {{ mission.remaining_seconds or mission.duration * 60 }};
-let displayInterval;
-let saveInterval;
-startTimer();
-// ------------------------
-// Timer functions
-// ------------------------
-function startTimer() {
-    if (!displayInterval) {
-        displayInterval = setInterval(updateDisplay, 1000); // update timer every second
-    }
-    if (!saveInterval) {
-        saveInterval = setInterval(saveTime, 5000); // save to backend every 5 seconds
-    }
-}
+let currentCorrectAnswer = "";
+let currentSubject = "";
 
-function pauseTimer() {
-    clearInterval(displayInterval);
-    clearInterval(saveInterval);
-    displayInterval = null;
-    saveInterval = null;
-}
+const dictionaries = {
+    ru: {"Привет": "Здравей", "Школа": "Училище", "Книга": "Книга", "Друг": "Приятел"},
+    fr: {"Bonjour": "Здравей", "École": "Училище", "Livre": "Книга", "Ami": "Приятел"},
+    de: {"Hallo": "Здравей", "Buch": "Книга", "Schule": "Училище", "Freund": "Приятел"},
+    geo: {"Франция": "Париж", "Германия": "Берлин", "България": "София", "Италия": "Рим", "Испания": "Мадрид"},
+    it: {"Copy": "Ctrl+C", "Paste": "Ctrl+V", "Процесор": "CPU", "Уеб език": "HTML", "Запази": "Ctrl+S"},
+    science: {"Водород": "H", "Кислород": "O", "Злато": "Au", "Желязо": "Fe", "Сребро": "Ag"}
+};
 
-// ------------------------
-// Update the visible timer
-// ------------------------
+// --- ТАЙМЕР И ЗАПАЗВАНЕ ---
 function updateDisplay() {
     if (totalSeconds <= 0) {
-        pauseTimer();
+        clearInterval(timerInterval);
+        clearInterval(saveInterval);
         document.getElementById("completeForm").style.display = "block";
-        document.getElementById("timer").innerText = "Time's up!";
+        document.getElementById("timer").innerText = "ГОТОВО!";
         return;
     }
-    let minutes = Math.floor(totalSeconds / 60);
-    let seconds = totalSeconds % 60;
-    document.getElementById("timer").innerText = `${minutes}:${seconds < 10 ? "0" : ""}${seconds}`;
+    let m = Math.floor(totalSeconds / 60);
+    let s = totalSeconds % 60;
+    document.getElementById("timer").innerText = `${m}:${s < 10 ? '0' : ''}${s}`;
     totalSeconds--;
 }
 
-// ------------------------
-// Save timer to backend
-// ------------------------
+// Функцията за запазване на времето в базата данни
 function saveTime() {
-    if (totalSeconds > 0) {
+    if (totalSeconds >= 0) {
         fetch("/pause_mission/{{ mission.id }}", {
             method: "POST",
             headers: {"Content-Type": "application/json"},
@@ -80,55 +97,96 @@ function saveTime() {
     }
 }
 
-// ------------------------
-// Pause/resume on tab focus
-// ------------------------
-window.addEventListener("focus", startTimer);
-window.addEventListener("blur", pauseTimer);
+let timerInterval = setInterval(updateDisplay, 1000);
+let saveInterval = setInterval(saveTime, 5000); // Запазва на всеки 5 секунди
 
-// ------------------------
-// Save timer when closing page
-// ------------------------
-window.addEventListener("beforeunload", function() {
-    navigator.sendBeacon(
-        "/pause_mission/{{ mission.id }}",
-        JSON.stringify({ remaining_seconds: totalSeconds })
-    );
-});
-// ------------------------
-// Initialize display immediately
-// ------------------------
-updateDisplay();
-
-// ------------------------
-// Math mission logic
-// ------------------------
-{% if "math" in mission.title.lower() %}
-let correctAnswer;
-function generateEquation() {
-    let num1 = Math.floor(Math.random() * 20) + 1;
-    let num2 = Math.floor(Math.random() * 20) + 1;
-    correctAnswer = num1 + num2;
-    document.getElementById("equation").innerText = `${num1} + ${num2} = ?`;
-    document.getElementById("answer").value = "";
-    document.getElementById("result").innerText = "";
-}
-function checkAnswer() {
-    let userAnswer = parseInt(document.getElementById("answer").value);
-    if(userAnswer === correctAnswer){
-        fetch("/add_bonus_xp", {
-            method:"POST",
-            headers:{"Content-Type":"application/json"},
-            body:JSON.stringify({xp:2})
-        });
-        document.getElementById("result").innerText = "+2 XP!";
-        generateEquation();
-    } else {
-        document.getElementById("result").innerText = "Try again!";
+// --- ГЕНЕРИРАНЕ НА ЗАДАЧИ ---
+function generateTask() {
+    const title = "{{ mission.title.lower() }}";
+    const display = document.getElementById("display-area");
+    
+    if (title.includes("мат")) {
+        currentSubject = "math";
+        let n1 = Math.floor(Math.random() * 20) + 1, n2 = Math.floor(Math.random() * 20) + 1;
+        currentCorrectAnswer = n1 + n2;
+        display.innerText = `${n1} + ${n2} = ?`;
+        document.getElementById("task-title").innerText = "Математика (+2 XP)";
+    } 
+    else if (title.match(/руски|френски|немски|английски/)) {
+        currentSubject = "lang";
+        let lang = title.includes("руски") ? "ru" : (title.includes("френски") ? "fr" : "de");
+        let dict = dictionaries[lang] || dictionaries.ru;
+        let word = Object.keys(dict)[Math.floor(Math.random()*Object.keys(dict).length)];
+        display.innerText = word;
+        currentCorrectAnswer = dict[word];
+        document.getElementById("task-title").innerText = "Превод (+3 XP)";
+    }
+    else if (title.includes("географ")) {
+        currentSubject = "geo";
+        let keys = Object.keys(dictionaries.geo);
+        let country = keys[Math.floor(Math.random()*keys.length)];
+        display.innerText = country;
+        currentCorrectAnswer = dictionaries.geo[country];
+        document.getElementById("task-title").innerText = "Столица (+4 XP)";
+    }
+    else if (title.includes("биолог") || title.includes("хими") || title.includes("наука")) {
+        currentSubject = "science";
+        let keys = Object.keys(dictionaries.science);
+        let elm = keys[Math.floor(Math.random()*keys.length)];
+        display.innerText = elm;
+        currentCorrectAnswer = dictionaries.science[elm];
+        document.getElementById("task-title").innerText = "Химичен символ (+4 XP)";
+    }
+    else if (title.includes("ит") || title.includes("информ")) {
+        currentSubject = "it";
+        let keys = Object.keys(dictionaries.it);
+        let term = keys[Math.floor(Math.random()*keys.length)];
+        display.innerText = term;
+        currentCorrectAnswer = dictionaries.it[term];
+        document.getElementById("task-title").innerText = "IT Знания (+3 XP)";
+    }
+    else {
+        display.innerText = "Фокус!";
+        document.getElementById("input-container").style.display = "none";
     }
 }
-generateEquation();
-{% endif %}
+
+function checkAnswer() {
+    const val = document.getElementById("user-answer").value.trim().toLowerCase();
+    const resultMsg = document.getElementById("result-msg");
+    const badge = document.getElementById("badge-wrapper");
+
+    if (val === currentCorrectAnswer.toString().toLowerCase()) {
+        let xpToAdd = 2;
+        if (currentSubject === "lang" || currentSubject === "it") xpToAdd = 3;
+        if (currentSubject === "geo" || currentSubject === "science") xpToAdd = 4;
+
+        fetch("/add_bonus_xp", {
+            method: "POST",
+            headers: {"Content-Type": "application/json"},
+            body: JSON.stringify({xp: xpToAdd})
+        });
+
+        resultMsg.innerText = `ВЯРНО! +${xpToAdd} XP 🔥`;
+        resultMsg.style.color = "#22c55e";
+        
+        // Активиране на голямата анимация на баджа
+        badge.classList.add("shake-active");
+        
+        setTimeout(() => {
+            badge.classList.remove("shake-active");
+            resultMsg.innerText = "";
+            document.getElementById("user-answer").value = "";
+            generateTask();
+        }, 800);
+    } else {
+        resultMsg.innerText = "Грешно! Опитай пак.";
+        resultMsg.style.color = "#ef4444";
+    }
+}
+
+generateTask();
+updateDisplay();
 </script>
 </body>
 </html>

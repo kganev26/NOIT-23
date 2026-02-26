@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="bg">
+
+<head>
+    <meta charset="UTF-8">
+    <title>AI Assistant</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+
+<body>
+    <div class="container">
+        <div class="sidebar">
+            <div class="logo"><img src="{{ url_for('static', filename='logo.png') }}"></div>
+            <a href="{{ url_for('dashboard') }}" class="tab-button">Dashboard</a>
+            <a href="{{ url_for('ai_assistant') }}" class="tab-button active">AI Assistant</a>
+            <a href="{{ url_for('logout') }}" class="back-btn">Logout</a>
+        </div>
+
+        <div class="content-area">
+            <h1>AI Tutor Analytics</h1>
+
+            <div class="ai-grid">
+                <div class="ai-card highlight">
+                    <h3>Weakest Subject</h3>
+                    <p class="stat-focus">{{ weakest_subject }}</p>
+                    <p class="ai-hint">Виждам, че този предмет е най-труден за теб.</p>
+                </div>
+
+                <div class="ai-card">
+                    <h3>AI Recommendation</h3>
+                    <div class="chat-bubble">
+                        "Базирано на предишните ти мисии е 20% по-вероятно да завършиш {{ weakest_subject }} преди
+                        12:00."
+                    </div>
+                </div>
+            </div>
+
+            <div class="stats-container">
+                <h2>Detailed Statistics</h2>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Subject</th>
+                            <th>Started</th>
+                            <th>Completed</th>
+                            <th>Progress</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for subj, data in stats.items() %}
+                        {% set rate = (data.completed / data.total * 100)|round|int %}
+                        <tr>
+                            <td><strong>{{ subj }}</strong></td>
+                            <td>{{ data.total }}</td>
+                            <td>{{ data.completed }}</td>
+                            <td>
+                                <div class="progress-bg">
+                                    <div class="progress-fill" style="width: {{ rate }}%;"></div>
+                                </div>
+                                <span>{{ rate }}%</span>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            <div class="chat-section">
+                <h2>Ask your AI Tutor</h2>
+                <div class="chat-window" id="chatWindow">
+                    {% if chat_history %}
+                    {% for msg in chat_history %}
+                    <div class="message {{ 'ai-msg' if msg.is_ai else 'user-msg' }}">
+                        {{ msg.content }}
+                    </div>
+                    {% endfor %}
+                    {% else %}
+                    <p style="text-align: center; opacity: 0.5;">Няма съобщения още. Попитай нещо!</p>
+                    {% endif %}
+                </div>
+
+                <form action="{{ url_for('ask_ai') }}" method="POST" class="chat-input-area">
+                    <input type="text" name="message" placeholder="Попитай как се справяш..." required>
+                    <button type="submit" onclick="showLoading()">Send</button>
+                    <div id="loader" style="display:none;" class="spinner">AI is thinking...</div>
+                </form>
+            </div>
+
+            <script>
+                // Keep chat scrolled to bottom
+                var chatWindow = document.getElementById("chatWindow");
+                chatWindow.scrollTop = chatWindow.scrollHeight;
+                function showLoading() {
+                    document.getElementById("loader").style.display = "block";
+                }
+            </script>
+        </div>
+    </div>
+</body>
+
+</html>

@@ -113,6 +113,18 @@ body {
     margin-bottom: 1rem;
     filter: brightness(120%);
 }
+.sidebar .tab-button {
+    width: 100%;
+    padding: 0.8rem;
+    background: rgba(255,255,255,0.15);
+    border: none;
+    text-decoration: none;
+    border-radius: 0.75rem;
+    color: #fff;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background 0.2s;
+}
 
 .tab-button {
     width: 100%;
@@ -399,4 +411,239 @@ a:hover {
 
 .content-area input[type="text"]:focus {
     background: rgba(255,255,255,0.25);
+}
+/* AI Assistant Layout */
+.ai-grid {
+    display: grid;
+    grid-template-columns: 1fr 1.5fr;
+    gap: 1.5rem;
+    margin-top: 2rem;
+}
+
+.ai-card {
+    background: rgba(255, 255, 255, 0.05);
+    padding: 1.5rem;
+    border-radius: 1rem;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.ai-card.highlight {
+    border-left: 5px solid #ff4d4d;
+}
+
+.stat-focus {
+    font-size: 2.5rem;
+    font-weight: bold;
+    color: #ff4d4d;
+    margin: 10px 0;
+}
+
+.ai-hint {
+    font-size: 0.85rem;
+    opacity: 0.7;
+    line-height: 1.4;
+}
+
+.chat-bubble {
+    background: rgba(108, 99, 255, 0.15);
+    padding: 1rem;
+    border-radius: 0 1rem 1rem 1rem;
+    font-style: italic;
+    color: #d1d1ff;
+    border-left: 3px solid #6c63ff;
+}
+
+/* Progress Bars */
+.progress-bg {
+    width: 100%;
+    background: rgba(255,255,255,0.1);
+    height: 8px;
+    border-radius: 4px;
+    overflow: hidden;
+    margin-bottom: 5px;
+}
+
+.progress-fill {
+    height: 100%;
+    background: #6c63ff;
+    transition: width 0.5s ease-in-out;
+}
+.chat-section {
+    margin-top: 2rem;
+    background: rgba(255, 255, 255, 0.03);
+    padding: 1.5rem;
+    border-radius: 1rem;
+}
+
+.chat-window {
+    height: 300px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding: 10px;
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 0.5rem;
+    margin-bottom: 1rem;
+}
+
+.message {
+    max-width: 80%;
+    padding: 0.8rem;
+    border-radius: 1rem;
+    font-size: 0.9rem;
+    line-height: 1.4;
+}
+
+.user-msg {
+    align-self: flex-end;
+    background: #6c63ff;
+    color: white;
+    border-bottom-right-radius: 0;
+}
+
+.ai-msg {
+    align-self: flex-start;
+    background: rgba(255, 255, 255, 0.1);
+    color: #d1d1ff;
+    border-bottom-left-radius: 0;
+    border: 1px solid rgba(108, 99, 255, 0.3);
+}
+
+.chat-input-area {
+    display: flex;
+    gap: 10px;
+}
+
+.chat-input-area input {
+    flex-grow: 1;
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    padding: 0.8rem;
+    border-radius: 0.5rem;
+    color: white;
+}
+
+.chat-input-area button {
+    background: #6c63ff;
+    color: white;
+    border: none;
+    padding: 0 1.5rem;
+    border-radius: 0.5rem;
+    cursor: pointer;
+}
+/* Mission Gameplay Containers */
+:root {
+    --primary: #6c63ff;
+    --success: #22c55e;
+    --error: #ef4444;
+    --accent: #ffd700;
+}
+
+.mission-container {
+    max-width: 800px;
+    margin: 40px auto;
+    padding: 20px;
+    text-align: center;
+}
+
+.mechanic-box {
+    background: rgba(255, 255, 255, 0.05);
+    border: 2px solid var(--primary);
+    padding: 30px;
+    border-radius: 20px;
+    margin: 25px 0;
+    box-shadow: 0 15px 35px rgba(0,0,0,0.4);
+}
+
+/* Typography for Challenges */
+.display-text {
+    font-size: 2.8rem;
+    font-weight: 800;
+    display: block;
+    margin: 20px 0;
+    color: var(--accent);
+    text-shadow: 0 0 15px rgba(255, 215, 0, 0.3);
+}
+
+/* Inputs and Interactive Elements */
+.mechanic-input {
+    width: 200px;
+    font-size: 1.5rem;
+    padding: 12px;
+    border-radius: 12px;
+    border: 2px solid #444;
+    background: #1a1a1a;
+    color: white;
+    text-align: center;
+    margin-bottom: 15px;
+    outline: none;
+}
+
+.mechanic-input:focus { 
+    border-color: var(--primary); 
+}
+
+.check-btn {
+    background: var(--success);
+    color: white;
+    border: none;
+    padding: 14px 30px;
+    border-radius: 12px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: 0.2s ease;
+    margin: 5px;
+}
+
+.check-btn:hover { 
+    transform: translateY(-3px); 
+    box-shadow: 0 5px 15px rgba(34, 197, 94, 0.4); 
+}
+
+/* Specialized layouts */
+.option-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 15px;
+    max-width: 400px;
+    margin: 0 auto;
+}
+
+#result-msg {
+    font-size: 1.2rem;
+    font-weight: bold;
+    margin-top: 15px;
+    min-height: 1.6em;
+}
+
+.timer-display {
+    font-size: 2rem;
+    font-family: monospace;
+    background: #222;
+    display: inline-block;
+    padding: 10px 20px;
+    border-radius: 10px;
+    border: 1px solid #444;
+}
+/* Badge Colors */
+.badge {
+    padding: 4px 12px;
+    border-radius: 4px;
+    font-size: 0.8rem;
+    font-weight: bold;
+    color: white;
+}
+.novice { background: #8e8e8e; }
+.elite { background: #ff9d00; box-shadow: 0 0 10px rgba(255, 157, 0, 0.5); }
+.legendary { background: #00d2ff; box-shadow: 0 0 15px rgba(0, 210, 255, 0.8); animation: glow 2s infinite alternate; }
+
+/* XP Bar */
+.xp-progress-wrapper { width: 300px; margin-top: 10px; }
+.xp-bar-bg { width: 100%; height: 10px; background: #333; border-radius: 5px; overflow: hidden; }
+.xp-bar-fill { height: 100%; background: #6c63ff; transition: width 0.4s ease; }
+
+@keyframes glow {
+    from { filter: brightness(1); }
+    to { filter: brightness(1.3); }
 }
