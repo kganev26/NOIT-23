@@ -5,7 +5,9 @@ from datetime import datetime, timedelta
 import json
 import random
 import google.generativeai as genai
-
+from dotenv import load_dotenv
+import os
+load_dotenv()
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'your_secret_key_here'
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///database.db'
@@ -277,8 +279,8 @@ def ai_assistant():
                            stats=subject_stats, 
                            weakest_subject=weakest_subject, 
                            chat_history=chat_history) # <--- Make sure this is here!
-
-genai.configure(api_key="AIzaSyBbjFzB7w2ONN42ktboJIxS_jhoHDHOFQU")
+api_key = os.getenv("AIzaSyBbjFzB7w2ONN42ktboJIxS_jhoHDHOFQU")
+genai.configure(api_key=api_key)
 # This alias should work because it appeared in your 'Available Models' list
 def get_weakest_subject(user_id):
     all_missions = Mission.query.filter_by(user_id=user_id).all()
@@ -368,7 +370,6 @@ def ask_ai():
 
     return redirect(url_for('ai_assistant'))
 
-import os
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))
     app.run(host="0.0.0.0", port=port)
