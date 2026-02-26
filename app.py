@@ -280,8 +280,13 @@ def ai_assistant():
                            weakest_subject=weakest_subject, 
                            chat_history=chat_history) # <--- Make sure this is here!
 # Използваме името на променливата, която зададохме в Render
-api_key = os.getenv("GOOGLE_API_KEY") 
-genai.configure(api_key=api_key)
+api_key = os.getenv("GOOGLE_API_KEY")
+
+if not api_key:
+    print("FATAL ERROR: GOOGLE_API_KEY is NOT found in environment variables!")
+else:
+    print(f"API Key loaded successfully (starts with: {api_key[:5]}...)")
+    genai.configure(api_key=api_key)
 # This alias should work because it appeared in your 'Available Models' list
 def get_weakest_subject(user_id):
     all_missions = Mission.query.filter_by(user_id=user_id).all()
