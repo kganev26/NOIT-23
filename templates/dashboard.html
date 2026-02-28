@@ -1,167 +1,166 @@
 <!DOCTYPE html>
 <html lang="bg">
+
 <head>
     <meta charset="UTF-8">
     <title>Табло - Dashboard</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-    <style>
-        /* Допълнителни стилове за по-големи баджове и разположение */
-        .badge-display img {
-            transition: transform 0.3s ease;
-        }
-        .badge-display img:hover {
-            transform: scale(1.1);
-        }
-        .card {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            text-align: center;
-            padding: 20px;
-        }
-        .study-program-section table {
-            width: 100%;
-            border-collapse: collapse;
-            background: rgba(255, 255, 255, 0.05);
-            border-radius: 10px;
-            overflow: hidden;
-        }
-        .study-program-section th, .study-program-section td {
-            padding: 12px;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            text-align: center;
-        }
-        .study-program-section input {
-            width: 90%;
-            background: transparent;
-            border: none;
-            color: white;
-            text-align: center;
-            font-size: 0.9rem;
-        }
-        .study-program-section input:focus {
-            outline: 1px solid #6c63ff;
-            background: rgba(108, 99, 255, 0.1);
-        }
-    </style>
 </head>
+
 <body>
 
-<div class="container">
-    <div class="sidebar">
-        <div class="logo">
-            <img src="{{ url_for('static', filename='logo.png') }}" alt="Logo">
+    <div class="container">
+        <div class="sidebar">
+            <div class="logo">
+                <img src="{{ url_for('static', filename='logo.png') }}" alt="Logo">
+            </div>
+            <a href="{{ url_for('dashboard') }}" class="tab-button active">Dashboard</a>
+            <a href="{{ url_for('ai_assistant') }}" class="tab-button">AI Assistant</a>
+            <a href="{{ url_for('logout') }}" class="back-btn" style="margin-top: auto; width: 100%; text-align: center; text-decoration: none;">Logout</a>
         </div>
-        <a href="{{ url_for('dashboard') }}" class="tab-button active">Dashboard</a>
-        <a href="{{ url_for('ai_assistant') }}" class="tab-button">AI Assistant</a>
-        
-        <a href="{{ url_for('logout') }}" class="back-btn" style="margin-top: auto; width: 100%; text-align: center; text-decoration: none;">Logout</a>
-    </div>
 
-    <div class="content-area">
-        <h1 style="margin-bottom: 1.5rem;">Добре дошъл, {{ current_user.username }}</h1>
+        <div class="content-area">
+            <h1 style="margin-bottom: 1.5rem;">Добре дошъл, {{ user.username }}</h1>
 
-        <div class="cards">
-            <div class="card">
-                <h3>Total XP</h3>
-                <p style="font-size: 2.5rem; font-weight: bold; color: #6c63ff; margin-bottom: 0.5rem;">{{ current_user.xp }}</p>
-                
-                <div class="xp-progress-wrapper" style="background: rgba(255,255,255,0.1); border-radius: 10px; height: 12px; width: 100%; overflow: hidden; margin-top: 10px;">
-                    <div class="xp-bar-fill" style="width: {{ (current_user.xp % 100) }}%; background: linear-gradient(90deg, #6c63ff, #a29bfe); height: 100%; transition: width 0.8s ease-out;"></div>
+            <div class="cards">
+                <div class="card">
+                    <h3>Ниво {{ user.level }}</h3>
+                    <p style="font-size: 2rem; font-weight: bold; color: #6c63ff; margin-bottom: 0.5rem;">
+                        {{ user.xp }} XP
+                    </p>
+
+                    <div class="progress-bar-bg" style="background: rgba(255,255,255,0.1); border-radius: 10px; height: 15px; width: 100%; overflow: hidden; margin-top: 10px;">
+                        <div class="progress-bar-fill"
+                             style="width: {{ current_level_xp }}%; background: linear-gradient(90deg, #6c63ff, #a29bfe); height: 100%; transition: width 1s ease-out; box-shadow: 0 0 10px #6c63ff;">
+                        </div>
+                    </div>
+                    <small style="opacity: 0.7; display: block; margin-top: 8px;">
+                        {{ current_level_xp }} / 100 XP до Ниво {{ user.level + 1 }}
+                    </small>
                 </div>
-                <small style="opacity: 0.7; display: block; margin-top: 8px;">{{ current_user.xp % 100 }} / 100 XP до следващо ниво</small>
-            </div>
 
-            <div class="card">
-                <h3>Rank & Status</h3>
-                <p style="font-size: 1.5rem; font-weight: bold; color: #22c55e; margin-bottom: 10px;">Level {{ current_user.level }}</p>
-                
-                <div class="badge-display">
-                    {% if current_user.level >= 10 %}
-                        <img src="{{ url_for('static', filename='badges/nivo10.png') }}" alt="Legendary Badge" style="width: 110px; filter: drop-shadow(0 0 15px rgba(0, 210, 255, 0.6));">
-                    {% elif current_user.level >= 5 %}
-                        <img src="{{ url_for('static', filename='badges/nivo5.png') }}" alt="Elite Badge" style="width: 110px; filter: drop-shadow(0 0 10px rgba(255, 157, 0, 0.5));">
-                    {% else %}
-                        <img src="{{ url_for('static', filename='badges/nivo1.png') }}" alt="Novice Badge" style="width: 110px;">
-                    {% endif %}
+                <div class="card">
+                    <h3>Твоят Ранк</h3>
+                    <div class="badge-display" style="margin: 10px 0;">
+                        {% if user.level >= 10 %}
+                            <img src="{{ url_for('static', filename='badges/nivo10.png') }}" alt="Legendary" style="width: 100px; filter: drop-shadow(0 0 10px #00d2ff);">
+                            <p style="color: #00d2ff; font-weight: bold;">Легенда</p>
+                        {% elif user.level >= 5 %}
+                            <img src="{{ url_for('static', filename='badges/nivo5.png') }}" alt="Elite" style="width: 100px; filter: drop-shadow(0 0 8px #ff9d00);">
+                            <p style="color: #ff9d00; font-weight: bold;">Бъдещ отличник</p>
+                        {% else %}
+                            <img src="{{ url_for('static', filename='badges/nivo1.png') }}" alt="Novice" style="width: 100px;">
+                            <p style="color: #aaa;">Новобранец</p>
+                        {% endif %}
+                    </div>
                 </div>
-            </div>
 
-            <div class="card">
-                <h3>Daily Missions</h3>
-                <div class="missions" style="width: 100%;">
-                    <form action="{{ url_for('generate_missions') }}" method="POST" style="margin-bottom: 1rem;">
-                        <select name="selected_day" class="tab-button" style="background: rgba(255, 255, 255, 0.1); margin-bottom: 0.5rem; width: 100%; color: white;">
-                            <option value="Monday">Понеделник</option>
-                            <option value="Tuesday">Вторник</option>
-                            <option value="Wednesday">Сряда</option>
-                            <option value="Thursday">Четвъртък</option>
-                            <option value="Friday">Петък</option>
-                        </select>
-                        <button type="submit" class="tab-button" style="font-size: 0.85rem; background: #6c63ff; border: none; cursor: pointer; width: 100%;">
-                            Get 3 Random Missions
-                        </button>
-                    </form>
+                <div class="card">
+                    <h3>Мисии за Деня</h3>
+                    <div class="missions" style="width: 100%;">
+                        <form action="{{ url_for('generate_missions') }}" method="POST" style="margin-bottom: 1rem;">
+                            <select name="selected_day" class="tab-button" style="background: rgba(255, 255, 255, 0.1); margin-bottom: 0.5rem; width: 100%; color: white;">
+                                <option value="Monday">Понеделник</option>
+                                <option value="Tuesday">Вторник</option>
+                                <option value="Wednesday">Сряда</option>
+                                <option value="Thursday">Четвъртък</option>
+                                <option value="Friday">Петък</option>
+                            </select>
+                            <button type="submit" class="tab-button" style="font-size: 0.85rem; background: #6c63ff; border: none; cursor: pointer; width: 100%;">
+                                Зареди нови мисии
+                            </button>
+                        </form>
 
-                    <ul style="list-style: none; text-align: left; font-size: 0.9rem; padding: 0;">
-                        {% for mission in missions %}
+                        <ul style="list-style: none; text-align: left; font-size: 0.9rem; padding: 0;">
+                            {% for mission in missions %}
                             <li style="margin-bottom: 0.8rem; display: flex; justify-content: space-between; align-items: center; background: rgba(255,255,255,0.05); padding: 0.8rem; border-radius: 0.5rem; border-left: 3px solid #6c63ff;">
                                 <span>{{ mission.title }}</span>
-                                <a href="{{ url_for('mission', mission_id=mission.id) }}" style="color: #6c63ff; font-weight: bold; text-decoration: none;">Start →</a>
+                                <a href="{{ url_for('mission', mission_id=mission.id) }}" style="color: #6c63ff; font-weight: bold; text-decoration: none;">Старт →</a>
                             </li>
-                        {% else %}
-                            <li style="opacity: 0.5; text-align: center; padding: 10px;">Избери ден, за да заредиш мисии.</li>
-                        {% endfor %}
-                    </ul>
+                            {% else %}
+                            <li style="opacity: 0.5; text-align: center; padding: 10px;">Няма активни мисии.</li>
+                            {% endfor %}
+                        </ul>
+                    </div>
                 </div>
             </div>
-        </div>
 
-        <hr style="margin: 2.5rem 0; border: 0; border-top: 1px solid rgba(255,255,255,0.1);">
+            <hr style="margin: 2.5rem 0; border: 0; border-top: 1px solid rgba(255,255,255,0.1);">
 
-        <div class="study-program-section">
-            <h2 style="margin-bottom: 1.5rem; display: flex; align-items: center; gap: 10px;">
-                📅 Седмична Програма
-            </h2>
-            <form action="{{ url_for('study_program') }}" method="POST">
-                <table>
-                    <thead>
-                        <tr>
-                            <th style="color: #6c63ff;">Час</th>
-                            <th>Понеделник</th>
-                            <th>Вторник</th>
-                            <th>Сряда</th>
-                            <th>Четвъртък</th>
-                            <th>Петък</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% set days = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"] %}
-                        {% for hour in range(1, 9) %}
-                        <tr>
-                            <td><strong>{{ hour }}</strong></td>
-                            {% for day in days %}
+            <div class="study-program-section">
+                <h2 style="margin-bottom: 1rem; display: flex; align-items: center; gap: 10px;">
+                    📅 Седмична Програма
+                </h2>
+                <form action="{{ url_for('study_program') }}" method="POST">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th style="color: #6c63ff;">Час</th>
+                                <th>Понеделник</th>
+                                <th>Вторник</th>
+                                <th>Сряда</th>
+                                <th>Четвъртък</th>
+                                <th>Петък</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% set days = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"] %}
+                            {% for hour in range(1, 9) %}
+                            <tr>
+                                <td><strong>{{ hour }}</strong></td>
+                                {% for day in days %}
                                 <td>
                                     {% set cell_key = day ~ '_' ~ hour %}
-                                    <input type="text" 
-                                        name="{{ cell_key }}" 
-                                        value="{{ programs.get(cell_key, '') }}" 
-                                        placeholder="...">
+                                    <input type="text" name="{{ cell_key }}" value="{{ programs.get(cell_key, '') }}" placeholder="...">
                                 </td>
+                                {% endfor %}
+                            </tr>
                             {% endfor %}
-                        </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
-                <div style="text-align: right;">
-                    <button type="submit" class="complete-btn" style="width: 220px; margin-top: 1.5rem; background: #22c55e;">
-                        💾 Запази Програмата
-                    </button>
-                </div>
-            </form>
+                        </tbody>
+                    </table>
+                    <div style="text-align: right;">
+                        <button type="submit" class="complete-btn" style="width: 220px; margin-top: 1.5rem; background: #22c55e; border: none; padding: 10px; border-radius: 5px; color: white; cursor: pointer;">
+                            💾 Запази Програмата
+                        </button>
+                    </div>
+                </form>
+            </div>
         </div>
     </div>
-</div>
+
+    {% with messages = get_flashed_messages() %}
+    {% if 'mission_completed_success' in messages %}
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            startConfetti();
+        });
+
+        function startConfetti() {
+            const numConfetti = 60;
+            const container = document.body;
+            const images = [
+                "{{ url_for('static', filename='confetti1.png') }}",
+                "{{ url_for('static', filename='confetti2.png') }}",
+                "{{ url_for('static', filename='confetti3.png') }}"
+            ];
+
+            for (let i = 0; i < numConfetti; i++) {
+                const confetti = document.createElement('div');
+                confetti.className = 'confetti-piece';
+                confetti.style.left = Math.random() * 100 + 'vw';
+                confetti.style.animationDelay = Math.random() * 2 + 's';
+                confetti.style.animationDuration = (Math.random() * 2 + 3) + 's';
+                confetti.style.backgroundImage = `url(${images[i % 3]})`;
+                const size = (Math.random() * 15 + 15) + 'px';
+                confetti.style.width = size;
+                confetti.style.height = size;
+                container.appendChild(confetti);
+                setTimeout(() => { confetti.remove(); }, 5000);
+            }
+        }
+    </script>
+    {% endif %}
+    {% endwith %}
 
 </body>
 </html>

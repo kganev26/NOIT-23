@@ -104,12 +104,19 @@ def logout():
 
 # ===========================
 # DASHBOARD & MISSION ROUTES
-# ===========================
+# =============
 @app.route('/dashboard')
 @login_required
 def dashboard():
+    # --- СИНХРОНИЗИРАНЕ НА НИВОТО (Добави това!) ---
+    calculated_level = (current_user.xp // 100) + 1
+    if current_user.level != calculated_level:
+        current_user.level = calculated_level
+        db.session.commit()
+    # ----------------------------------------------
+
     missions = Mission.query.filter_by(user_id=current_user.id, completed=False).all()
-    
+    # ... останалият ти код за all_missions и weakest_subject ...    
     # --- AI ANALYTICS LOGIC ---
     # Get all missions (completed and incomplete) to calculate stats
     all_missions = Mission.query.filter_by(user_id=current_user.id).all()
@@ -143,13 +150,16 @@ def dashboard():
         for index, subject in enumerate(subject_list):
             key = f"{p.day}_{index + 1}"
             formatted_program[key] = subject
-    
+    current_level_xp = current_user.xp % 100
+    progress_percent = current_level_xp  # Тъй като нивото е 100, XP-то е равно на процента
     return render_template('dashboard.html', 
                            missions=missions, 
                            user=current_user, 
                            programs=formatted_program,
                            weakest_subject=weakest_subject,
-                           stats=subject_stats)
+                           stats=subject_stats,
+                           current_level_xp=current_level_xp,
+                           progress_percent=progress_percent)
 
 @app.route('/generate_missions', methods=['POST'])
 @login_required
@@ -174,7 +184,7 @@ def generate_missions():
         for subject in selected_subjects:
             new_mission = Mission(
                 title=f"{subject}",
-                duration=45,
+                duration=1,
                 xp_reward=50,
                 user_id=current_user.id
             )
@@ -216,9 +226,17 @@ def mission(mission_id):
 def complete_mission(mission_id):
     mission = Mission.query.get_or_404(mission_id)
     mission.completed = True
-    mission.remaining_seconds = 0
     current_user.xp += mission.xp_reward
+    
+    # ЛОГИКА ЗА LEVEL UP:
+    # На всеки 100 XP потребителят качва ниво
+    new_level = (current_user.xp // 100) + 1
+    if new_level > current_user.level:
+        current_user.level = new_level
+        flash('level_up') # Можеш да добавиш и анимация за нов левъл!
+
     db.session.commit()
+    flash('mission_completed_success') 
     return redirect(url_for('dashboard'))
 
 @app.route('/add_bonus_xp', methods=['POST'])
@@ -226,18 +244,13 @@ def complete_mission(mission_id):
 def add_bonus_xp():
     data = request.get_json()
     amount = data.get('xp', 2)
-    subject = data.get('subject', 'General')
-
-    # Security: Max bonus per request to prevent cheating
-    if amount > 10: amount = 10
-
     current_user.xp += amount
     
-    # Logic to track "Daily Subject Master"
-    # (You could add a column to User to track which subject they worked on most today)
+    # Проверка за ниво
+    current_user.level = (current_user.xp // 100) + 1
     
     db.session.commit()
-    return jsonify({"status": "success", "new_total": current_user.xp})
+    return jsonify({"status": "success", "new_total": current_user.xp, "level": current_user.level})
 
 @app.route('/study_program', methods=['POST'])
 @login_required

@@ -647,3 +647,83 @@ a:hover {
     from { filter: brightness(1); }
     to { filter: brightness(1.3); }
 }
+/* static/style.css */
+
+.confetti {
+    position: fixed;
+    top: -50px; /* Почва малко над екрана */
+    width: 30px; /* Можеш да промениш размера */
+    height: 30px;
+    background-size: contain;
+    background-repeat: no-repeat;
+    opacity: 0.8;
+    z-index: 1000; /* Увери се, че са над всичко останало */
+    pointer-events: none; /* За да не пречат на кликването */
+    animation: fall linear forwards;
+}
+
+@keyframes fall {
+    to {
+        transform: translateY(100vh) rotate(360deg); /* Падат до долу и се въртят */
+        opacity: 0; /* Изчезват накрая */
+    }
+}
+.confetti-piece {
+    position: fixed;
+    top: -50px;
+    background-size: contain;
+    background-repeat: no-repeat;
+    z-index: 9999;
+    pointer-events: none; /* За да не пречат на кликането по сайта */
+    animation: fallAndRotate linear forwards;
+}
+
+@keyframes fallAndRotate {
+    0% {
+        transform: translateY(0) rotate(0deg);
+        opacity: 1;
+    }
+    100% {
+        transform: translateY(110vh) rotate(720deg);
+        opacity: 0;
+    }
+}
+.xp-container {
+    background: #2c2c2c;
+    padding: 15px;
+    border-radius: 12px;
+    margin: 20px 0;
+    color: white;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+}
+
+.xp-header {
+    display: flex;
+    justify-content: space-between;
+    font-weight: bold;
+    margin-bottom: 8px;
+    font-size: 1.1rem;
+}
+
+.progress-bar-bg {
+    background: #444;
+    height: 12px;
+    border-radius: 6px;
+    overflow: hidden;
+    position: relative;
+}
+
+.progress-bar-fill {
+    background: linear-gradient(90deg, #00dbde 0%, #fc00ff 100%);
+    height: 100%;
+    border-radius: 6px;
+    transition: width 0.8s ease-in-out; /* Анимация при пълнене */
+    box-shadow: 0 0 10px rgba(0, 219, 222, 0.5);
+}
+
+.xp-remaining {
+    text-align: center;
+    font-size: 0.85rem;
+    color: #bbb;
+    margin-top: 8px;
+}
