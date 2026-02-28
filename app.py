@@ -184,7 +184,7 @@ def generate_missions():
         for subject in selected_subjects:
             new_mission = Mission(
                 title=f"{subject}",
-                duration=1,
+                duration=45,
                 xp_reward=50,
                 user_id=current_user.id
             )

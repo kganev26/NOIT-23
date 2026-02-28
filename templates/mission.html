@@ -112,7 +112,7 @@ function generateTask() {
         display.innerText = `${n1} + ${n2} = ?`;
         document.getElementById("task-title").innerText = "Математика (+2 XP)";
     } 
-    else if (title.match(/руски|френски|немски|английски/)) {
+    else if (title.match(/руски|френски|немски/)) {
         currentSubject = "lang";
         let lang = title.includes("руски") ? "ru" : (title.includes("френски") ? "fr" : "de");
         let dict = dictionaries[lang] || dictionaries.ru;
